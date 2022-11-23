@@ -22,7 +22,7 @@ int main(void) {
 	// create tpoll
 	tpoll_t *tpoll;
 	tqueue_t *tqueue;
-	int ret = tpoll_create(&tpoll, 6, 10, &tqueue, 5);
+	int ret = tpoll_create(&tpoll, 10, 20, &tqueue, 15);
 	if (ret != 0) {
 		fprintf(stderr, "create tpoll error \n");
 		exit(1);
@@ -51,11 +51,11 @@ int main(void) {
 
 	// test full task added
 	addTask(tpoll);
-	sleep(5);
+	// sleep(5);
 	// 测试创建新的线程
 	printf("test add new thread \n");
 	pthread_mutex_lock(&(tpoll->tpoll_mutex));
-	ret = tpoll_increaseThread(tpoll, 3);
+	ret = tpoll_increaseThread(tpoll, 9);
 	if (ret <= 0) {
 		printf("increase error %d \n", ret);
 	}
@@ -63,18 +63,19 @@ int main(void) {
 	pthread_mutex_unlock(&(tpoll->tpoll_mutex));
 
 	addTask(tpoll);
-	sleep(5);
+	// sleep(5);
 
 	pthread_mutex_lock(&(tpoll->tpoll_mutex));
-	ret = tpoll_decreaseThread(tpoll, 3);
+	ret = tpoll_decreaseThread(tpoll, 4);
 	if (ret < 0) {
 		printf("decrease thread error : %d \n", ret);
+		exit(1);
 	}
 	printf("tpoll thread: %d \n", tpoll->thread_curr_cnt);
 	pthread_mutex_unlock(&(tpoll->tpoll_mutex));
 
 	addTask(tpoll);
-	sleep(5);
+	// sleep(5);
 	
 	printf("start distory \n");	
 	pthread_t manager_tid = (tpoll->manager_thread);
@@ -92,7 +93,7 @@ int main(void) {
 int addTask(tpoll_t *tpoll) {
 	int count = 0;
 	while (1) {
-		if (count >= 10) {
+		if (count >= 20) {
 			break;
 		}
 		pthread_mutex_lock(&(tpoll->tpoll_mutex));

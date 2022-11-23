@@ -11,8 +11,9 @@
 #define TPOLL_TASK_OCCUPIED -21
 #define TPOLL_THREAD_OVER_LIMIT -22
 #define TPOLL_THREAD_UNKNOW_ERROR -23
-#define TPOLL_THREAD_FULL -24
-#define TPOLL_THREAD_EMPTY -25
+#define TPOLL_THREAD_FULL -24 // 线程池满
+#define TPOLL_THREAD_EMPTY -25 // 线程池空
+#define TPOLL_THREAD_LES -26 // 线程池中线程数量小于设定的最小数量
 
 struct tpoll_struct {
 	// 锁和条件变量

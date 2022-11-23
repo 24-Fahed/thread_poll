@@ -3,7 +3,7 @@
 #include <time.h>
 #include "tpoll.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 struct tpoll_routine {
 	tpoll_t* tpoll;
@@ -144,6 +144,10 @@ int tpoll_increaseThread(tpoll_t *tpoll, int num) {
 }
 
 int tpoll_decreaseThread(tpoll_t *tpoll, int num) {
+	if (((tpoll->thread_curr_cnt) - num) < (tpoll->thread_min_cnt)) {
+	 	return TPOLL_THREAD_LES;
+	}
+
 	tpoll->thread_distory_cnt = num;
 	return 0;
 }
@@ -198,6 +202,7 @@ void *tpoll_routine(void *arg) {
 		if (ret != 0) {
 			fprintf(stderr, "pthread %ld err occor: %d \n", pthread_self(), ret);
 			pthread_mutex_unlock(&(tpoll->tpoll_mutex));
+			ret = 0;
 			continue;
 		}
 
@@ -256,7 +261,8 @@ void *tpoll_manager(void *arg) {
 		if (tpoll->shutdown == 1) {
 			// 回收线程
 			pthread_mutex_lock(&(tpoll->tpoll_mutex));
-			tpoll_decreaseThread(tpoll, tpoll->thread_curr_cnt);
+			// tpoll_decreaseThread(tpoll, tpoll->thread_curr_cnt);
+			tpoll->thread_distory_cnt = tpoll->thread_curr_cnt;
 			
 			pthread_t *thread_list = malloc(sizeof(pthread_t) * (tpoll->thread_max_cnt));
 			thread_list = memcpy(thread_list, tpoll->thread_list, sizeof(pthread_t) * (tpoll->thread_max_cnt));
